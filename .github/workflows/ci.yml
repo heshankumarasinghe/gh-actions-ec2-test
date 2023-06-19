@@ -18,3 +18,14 @@ jobs:
         node-version: 18
         cache: 'npm'
     - run: npm ci
+    - name: Check if gh-actions-ec2-test is running
+      id: check_pm2
+      run: |
+        pm2 describe gh-actions-ec2-test
+        echo "::set-output name=is_running::true"
+      ignore_errors: true
+    - name: Start gh-actions-ec2-test if not running
+      if: ${{ steps.check_pm2.outputs.is_running != 'true' }}
+      run: pm2 start /home/ec2-user/actions-runner/_work/gh-actions-ec2-test/gh-actions-ec2-test/app.js --name gh-actions-ec2-test
+    - name: Restart gh-actions-ec2-test
+      run: sudo pm2 restart gh-actions-ec2-test

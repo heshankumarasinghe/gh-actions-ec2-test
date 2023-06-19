@@ -35,6 +35,6 @@ jobs:
         echo "::set-output name=started::true"
 
     - name: Restart gh-actions-ec2-test
-      if: start_pm2.started
+      if: steps.start_pm2.started
       run: sudo pm2 restart gh-actions-ec2-test
       

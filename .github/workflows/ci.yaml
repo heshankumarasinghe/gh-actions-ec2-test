@@ -1,7 +1,0 @@
-# name: Deployment
-# on: push
-# jobs:
-#   runs-on: self-hosted
-#   steps:
-#     - name: Setup NodeJS 18
-#       uses: actions

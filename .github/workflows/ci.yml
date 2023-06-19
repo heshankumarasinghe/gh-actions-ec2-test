@@ -36,4 +36,3 @@ jobs:
     - name: Restart gh-actions-ec2-test
       # if: steps.check_pm2.outputs.is_running == 'true'
       run: sudo pm2 restart gh-actions-ec2-test
-      

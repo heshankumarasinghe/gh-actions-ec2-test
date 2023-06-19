@@ -22,11 +22,15 @@ jobs:
       id: check_pm2
       run: |
         if pm2 describe gh-actions-ec2-test &> /dev/null; then
-          echo "::set-output name=is_running::true"
+          # Double-check the process status by querying PM2
+          if pm2 list | grep -q "gh-actions-ec2-test"; then
+            echo "::set-output name=is_running::true"
+          else
+            echo "::set-output name=is_running::false"
+          fi
         else
           echo "::set-output name=is_running::false"
         fi
-
     - name: Start gh-actions-ec2-test if not running
       # id: start_pm2  
       if: steps.check_pm2.outputs.is_running != 'true'

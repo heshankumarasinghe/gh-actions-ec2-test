@@ -21,13 +21,8 @@ jobs:
     - name: Check if gh-actions-ec2-test is running
       id: check_pm2
       run: |
-        if pm2 describe gh-actions-ec2-test &> /dev/null; then
-          # Double-check the process status by querying PM2
-          if pm2 list | grep -q "gh-actions-ec2-test"; then
-            echo "::set-output name=is_running::true"
-          else
-            echo "::set-output name=is_running::false"
-          fi
+        if pm2 list | grep -wq "gh-actions-ec2-test" | awk '{print $18}' | grep -wq "online"; then
+          echo "::set-output name=is_running::true"
         else
           echo "::set-output name=is_running::false"
         fi

@@ -4,7 +4,7 @@ const app = express();
 
 app.get('/api/v1/users', (req, res) => {
     return res.status(200).json({
-        status: 'Success',
+        status: 'success',
         message: 'Hello, World!',
         data: null
     });

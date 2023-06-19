@@ -21,17 +21,20 @@ jobs:
     - name: Check if gh-actions-ec2-test is running
       id: check_pm2
       run: |
-        if pm2 list | grep -wq "gh-actions-ec2-test" | awk '{print $18}' | grep -wq "online"; then
-          echo "::set-output name=is_running::true"
+        status=$(pm2 list | grep -w "gh-actions-ec2-test" | awk '{print $18}')
+        if [[ "$status" == "online" ]]; then
+          echo "::set-output name=pm2_status::online"
+        elif [[ "$status" == "stopped" ]]; then
+          echo "::set-output name=pm2_status::stopped"
         else
-          echo "::set-output name=is_running::false"
+          echo "::set-output name=pm2_status::"
         fi
-    - name: Start gh-actions-ec2-test if not running
-      # id: start_pm2  
-      if: steps.check_pm2.outputs.is_running != 'true'
+    - name: Start gh-actions-ec2-test if pm2 is not started yet
+      if: steps.check_pm2.outputs.pm2_status == ''
       run: sudo pm2 start /home/ec2-user/actions-runner/_work/gh-actions-ec2-test/gh-actions-ec2-test --name=gh-actions-ec2-test
-      # echo "::set-output name=started::true"
-
-    - name: Restart gh-actions-ec2-test
-      # if: steps.check_pm2.outputs.is_running == 'true'
+    - name: Start gh-actions-ec2-test if pm2 is stopped
+      if: steps.check_pm2.outputs.pm2_status == 'stopped'
+      run: sudo pm2 start gh-actions-ec2-test
+    - name: Restart gh-actions-ec2-test if pm2 is online
+      if: steps.check_pm2.outputs.pm2_status == 'online'
       run: sudo pm2 restart gh-actions-ec2-test
